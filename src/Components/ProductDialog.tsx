@@ -14,6 +14,8 @@ export function ProductDialog({ product }) {
     dbProductsArr,
   } = useContext(TableContext);
 
+  const isEditModeOn = product !== undefined;
+
   const [showDeleConfirmation, setShowDeleteConfirmation] = useState(false);
 
   const openDialog = () => {
@@ -45,8 +47,8 @@ export function ProductDialog({ product }) {
 
     const settings = {
       route: route,
-
-      method: product ? "PUT" : "POST",
+      id: isEditModeOn && product._id,
+      method: isEditModeOn ? "PUT" : "POST",
       callback: () => {
         closeDialog();
 
@@ -57,10 +59,6 @@ export function ProductDialog({ product }) {
       },
       body: JSON.stringify(body),
     };
-
-    if (product) {
-      settings.id = product._id;
-    }
 
     tryToModifyDbWithAuth(settings);
   }
@@ -84,7 +82,9 @@ export function ProductDialog({ product }) {
 
   return (
     <>
-      <button onClick={openDialog}>{product ? "Editar" : "Agregar"}</button>
+      <button onClick={openDialog}>
+        {isEditModeOn ? "Editar" : "Agregar"}
+      </button>
 
       <dialog className="crud" ref={dialogRef}>
         {showDeleConfirmation && (
@@ -118,30 +118,29 @@ export function ProductDialog({ product }) {
               }
             }
             const categories = dbProductsArr.map((product) => product.category);
-            console.log(`categories are : ${categories}`);
+
+            const isCategory = keySchema.key === "category";
             return (
               <label>
                 {keySchema.key}
                 <input
-                  list={
-                    keySchema.key === "category" ? "category-list" : undefined
-                  }
+                  list={isCategory ? "category-list" : undefined}
                   name={keySchema.key}
                   type={getInputType(keySchema.type)}
                   placeholder={keySchema.key}
                   defaultValue={
-                    keySchema.type !== "Boolean"
-                      ? product?.[keySchema.key]
+                    keySchema.type !== "Boolean" && product
+                      ? product[keySchema.key]
                       : undefined
                   }
                   defaultChecked={
-                    keySchema.type === "Boolean"
-                      ? product?.[keySchema.key]
+                    keySchema.type === "Boolean" && product
+                      ? product[keySchema.key]
                       : undefined
                   }
                   required={keySchema.required}
                 />
-                {product?.[keySchema.key] && (
+                {isCategory && (
                   <datalist id="category-list">
                     {categories.map((category) => (
                       <option value={category} />
@@ -153,7 +152,7 @@ export function ProductDialog({ product }) {
           })}
 
           <div className="buttons-container">
-            {product && (
+            {isEditModeOn && (
               <button
                 type="button"
                 className="delete"
