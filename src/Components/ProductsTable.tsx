@@ -62,13 +62,6 @@ export default function ProductsTable({ h1, route, schemaRoute, Menu }) {
           </>
         )}
       </section>
-      {isLoading ? (
-        "Loading"
-      ) : (
-        <ShareMenuSection productsList={dbProductsArr}>
-          <Menu data={dbProductsArr} />
-        </ShareMenuSection>
-      )}
     </TableContext.Provider>
   );
 }

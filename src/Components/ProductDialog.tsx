@@ -5,8 +5,14 @@ import tryToModifyDbWithAuth from "../functions/tryToModifyDbWithAuth";
 export function ProductDialog({ product }) {
   const dialogRef = useRef(null);
   const formRef = useRef(null);
-  const { get_AndDo_, route, setDbProductsArr, productSchema, productKeys } =
-    useContext(TableContext);
+  const {
+    get_AndDo_,
+    route,
+    setDbProductsArr,
+    productSchema,
+    productKeys,
+    dbProductsArr,
+  } = useContext(TableContext);
 
   const [showDeleConfirmation, setShowDeleteConfirmation] = useState(false);
 
@@ -111,10 +117,15 @@ export function ProductDialog({ product }) {
                   return "text";
               }
             }
+            const categories = dbProductsArr.map((product) => product.category);
+            console.log(`categories are : ${categories}`);
             return (
               <label>
                 {keySchema.key}
                 <input
+                  list={
+                    keySchema.key === "category" ? "category-list" : undefined
+                  }
                   name={keySchema.key}
                   type={getInputType(keySchema.type)}
                   placeholder={keySchema.key}
@@ -130,6 +141,13 @@ export function ProductDialog({ product }) {
                   }
                   required={keySchema.required}
                 />
+                {product?.[keySchema.key] && (
+                  <datalist id="category-list">
+                    {categories.map((category) => (
+                      <option value={category} />
+                    ))}
+                  </datalist>
+                )}
               </label>
             );
           })}
