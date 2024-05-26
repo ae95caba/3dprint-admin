@@ -100,7 +100,30 @@ export function ProductDialog({ product }) {
         )}
         <form ref={formRef} onSubmit={handleSubmit}>
           {productSchema?.map((keySchema) => {
-            function getInputType(schemaType) {
+            function getInputType(keySchema) {
+              if (keySchema.key === "createdTime") {
+                return "date";
+              }
+              switch (keySchema.type) {
+                case "String":
+                  return "text";
+                case "Number":
+                  return "number";
+                case "Boolean":
+                  return "checkbox";
+                // Add more cases as needed
+                default:
+                  return "text";
+              }
+            }
+            /*      function getInputDefaultValue(schemaType) {
+              if (!isEditModeOn || keySchema.type === "Boolean") {
+                return undefined;
+              }else if (keySchema.name === "createdTime"){
+                //logic here
+              }else{
+                return product[keySchema.key]
+              }
               switch (schemaType) {
                 case "String":
                   return "text";
@@ -116,7 +139,7 @@ export function ProductDialog({ product }) {
                 default:
                   return "text";
               }
-            }
+            } */
             const categories = dbProductsArr.map((product) => product.category);
 
             const isCategory = keySchema.key === "category";
@@ -126,15 +149,15 @@ export function ProductDialog({ product }) {
                 <input
                   list={isCategory ? "category-list" : undefined}
                   name={keySchema.key}
-                  type={getInputType(keySchema.type)}
+                  type={getInputType(keySchema)}
                   placeholder={keySchema.key}
                   defaultValue={
-                    keySchema.type !== "Boolean" && product
+                    keySchema.type !== "Boolean" && isEditModeOn
                       ? product[keySchema.key]
                       : undefined
                   }
                   defaultChecked={
-                    keySchema.type === "Boolean" && product
+                    keySchema.type === "Boolean" && isEditModeOn
                       ? product[keySchema.key]
                       : undefined
                   }
