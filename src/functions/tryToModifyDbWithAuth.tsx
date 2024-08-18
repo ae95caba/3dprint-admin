@@ -21,6 +21,9 @@ async function tryToModifyDbWithAuth(settings: Settings) {
 
   try {
     const token = JSON.parse(localStorage.getItem("jwtToken")).token;
+
+    console.log(`body is ${body}`);
+
     const response = await client({
       method: method,
       url: `${route}${id ? `/${id}` : ""}`,
@@ -42,7 +45,10 @@ async function tryToModifyDbWithAuth(settings: Settings) {
   } catch (error) {
     console.log(`error ms is:${error.message}`);
 
-    if (error.message === "Cannot read properties of null (reading 'token')") {
+    if (
+      error.message === "Cannot read properties of null (reading 'token')" ||
+      error.message == "JSON.parse(...) is null"
+    ) {
       showNotLoggedAlert();
     }
   }
