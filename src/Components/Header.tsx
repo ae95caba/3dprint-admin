@@ -7,6 +7,7 @@ import logo from "../assets/logo-white.png";
 import UserDialog from "./UserDialog";
 
 export default function Header() {
+  console.log(`NODE_ENV es : ${process.env.NODE_ENV}`);
   const { isUserOnline, setIsUserOnline } = useContext(UserContext);
   const signupDialogRef = useRef(null);
   const signinDialogRef = useRef(null);
@@ -79,9 +80,12 @@ export default function Header() {
 
   async function handleSignunResponse(response) {
     if (response.ok) {
-      alert("account created");
+      alert("Account created successfully!");
     } else {
-      alert(response.statusText);
+      const errorMessage = await response.text(); // Attempt to read the error message from the response
+      alert(
+        `Error: ${response.status} - ${errorMessage || response.statusText}`
+      );
     }
   }
   return (
